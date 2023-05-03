@@ -1,11 +1,11 @@
 const sql = require('mssql');
 
 const config = {
-    user: 'sa',
-    password: '123456',
+    user: 'SA',
+    password: 'root*123456',
     server: 'localhost',
-    port: 3336,
-    database: 'transportadora',
+    port: 1433,
+    database: 'transcargodb',
     options: {
         encrypt: false
     }
