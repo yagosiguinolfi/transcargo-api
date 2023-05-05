@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 
 app.listen(8080, () => {
-  console.log('API rodando na porta 8080');
+  console.log('API rodando - localhost:8080');
 });
 
 
