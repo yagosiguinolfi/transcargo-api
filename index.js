@@ -1,14 +1,13 @@
 const express = require("express");
 const cors = require('cors');
 
-const app = express();
+const api = express();
 
-app.use(express.json());
-app.use(cors());
+api.use(express.json());
+api.use(cors());
 
-app.listen(8080, () => {
+api.listen(8080, () => {
   console.log('API rodando - localhost:8080');
 });
 
-
-require('./routes/index')(app);
+require('./routes/index')(api);
