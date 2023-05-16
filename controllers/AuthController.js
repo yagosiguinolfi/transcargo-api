@@ -3,13 +3,13 @@ const jwt = require('jsonwebtoken');
 const { default: knex } = require('knex');
 
 const login = async (req, res) => {
-  const login = req.body;
+  const {email, senha} = req.body;
   try {
     const usuario = await
       knex
         .select('*')
         .from('usuarios')
-        .where('email', login.email);
+        .where('email', email);
 
     if (!usuario) {
       res
@@ -18,12 +18,12 @@ const login = async (req, res) => {
           statusCode: 401,
           message: 'Usuário não encontrado!',
           data: {
-            email: login.email
+            email: email
           }
         });
     }
 
-    const passwordValidate = bcrypt.compareSync(login.password, usuario.password);
+    const passwordValidate = bcrypt.compareSync(password, usuario.password);
 
     if (!passwordValidate) {
       res
@@ -79,9 +79,9 @@ const verifyToken = (req, res, next) => {
   } catch (err) {
     console.error(err);
     res
-      .status(500)
+      .status(err.statusCode)
       .json({
-        statusCode: 500,
+        statusCode: err.statusCode,
         message: 'Token inválido!'
       });
   }
