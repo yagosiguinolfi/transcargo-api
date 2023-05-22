@@ -2,10 +2,6 @@ const { knex } = require("../database");
 
 function isValidCPF(cpf) {
   cpf = cpf.replace(/[\s.-]*/igm, '');
-  if (cpf !== null ||
-    cpf.length !== 11 ||
-    !Array.from(cpf).filter(e => e !== cpf[0]).length
-  ) return false;
 
   let soma, resto = 0;
 
@@ -25,6 +21,54 @@ function isValidCPF(cpf) {
   if (resto != parseInt(strCPF.substring(10, 11)))
     return false;
   return true;
+}
+
+function isValidCNPJ(cnpj) {
+  cnpj = cnpj.replace(/[^\d]+/g, '');
+
+  // Valida DVs
+  let tamanho = cnpj.length - 2
+  let numeros = cnpj.substring(0, tamanho);
+  let digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  for (var i = tamanho; i >= 1; i--) {
+    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+    if (pos < 2)
+      pos = 9;
+  }
+  let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado != parseInt(digitos.charAt(0)))
+    return false;
+
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (i = tamanho; i >= 1; i--) {
+    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+    if (pos < 2)
+      pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado != parseInt(digitos.charAt(1)))
+    return false;
+  return true;
+}
+
+function isValidCPFOrCNPJ(doc) {
+  if (!doc) return false
+  if (doc.every(doc[0]))//!Array.from(doc).filter(e => e !== doc[0]).length
+    return false
+  if (doc.length() == 11)
+    return isValidCPF(doc)
+  if (doc.length() == 14)
+    return isValidCNPJ(doc)
+  return false
+}
+
+function isMotorista(tipo){
+  return tipo.toUpperCase() == 'MOTORISTA';
 }
 
 exports.get = async (req, res, next) => {
@@ -56,6 +100,9 @@ exports.getById = async (req, res, next) => {
 
 exports.post = async (req, res, next) => {
   let pessoa = req.body;
+  if(isMotorista(pessoa.tipo) && !pessoa.cnh)
+    console.log(err);
+    res.status(400).send('É necessário informar a cnh do motorista!');
   try {
     const result = await
       knex('pessoas')
@@ -75,8 +122,8 @@ exports.post = async (req, res, next) => {
 exports.put = async (req, res, next) => {
   let id = req.params.id;
   let pessoa = req.body;
-  if(!isValidCPF(pessoa.cpf))
-    res.status(500).send('O cpf é inválido!');
+  if(!isValidCPFOrCNPJ(pessoa.cpf_cnpj))
+    res.status(500).send('O cpf ou cnpj é inválido!');
   try {
     const result = await
       knex('pessoas')

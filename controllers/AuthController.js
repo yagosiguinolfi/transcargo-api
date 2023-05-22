@@ -34,7 +34,7 @@ const login = async (req, res) => {
         });
     }
 
-    const token = jwt.sign({ name: usuario.nome }, 'TESTE');
+    const token = jwt.sign({ name: usuario.nome }, 'TOKEN');
 
     res
       .status(200)
@@ -73,7 +73,7 @@ const verifyToken = (req, res, next) => {
 
   try {
 
-    jwt.verify(token, 'TESTE');
+    jwt.verify(token, 'TOKEN');
     next();
     
   } catch (err) {
