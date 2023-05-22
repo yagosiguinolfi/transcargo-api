@@ -1,29 +1,15 @@
-// const sql = require('mssql');
-
 const connection = {
-    user: 'SA',
-    password: 'root*123456',
-    server: 'localhost',
-    port: 1433,
-    database: 'transcargodb',
-    options: {
-        encrypt: false
-    }
+    user: 'admin',
+    password: 'root*123',
+    server: 'database-1.ct3iq6yz2nm3.us-east-1.rds.amazonaws.com',
+    port: 3306,
+    database: 'transcargodb'
 }
 
 const knex = require('knex')({
-    client: 'mssql',
+    client: 'mysql2',
     connection
 })
-
-// async function connect() {
-//     try {
-//         await knex.connect();
-//         console.log("Conexão com o banco estabelecida!");
-//     }catch(err){
-//         console.log("Erro ao estabelecer conexão com o banco de dados! ", err)
-//     }
-// }
 
 module.exports = {
     knex
